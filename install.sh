@@ -4,11 +4,14 @@
 # Marzban Control Bot Installer/Uninstaller
 # Creator: @HEXMOSTAFA
 # Optimized and Refactored by xAI
-# Version: 2.3.5 (Stable & Robust, Auto-Download from GitHub)
+# Version: 2.3.6 (Stable & Robust, Fully Automated)
 # Last Updated: August 17, 2025
 # =================================================================
 
 set -e
+
+# Change to a safe directory to avoid getcwd errors during uninstall
+cd /tmp || cd /
 
 # --- Configuration ---
 INSTALL_DIR="/opt/marzban-control-bot"
@@ -202,7 +205,7 @@ install() {
         echo
     fi
     check_connectivity
-    check_requirements_url
+    check_url_access "$REQUIREMENTS_URL" "requirements.txt"
     echo
     install_dependencies
     echo
