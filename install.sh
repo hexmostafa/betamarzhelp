@@ -4,7 +4,7 @@
 # Marzban Control Bot Installer/Uninstaller
 # Creator: @HEXMOSTAFA
 # Optimized and Refactored by xAI
-# Version: 2.3.0 (Stable & Robust)
+# Version: 2.3.1 (Stable & Robust)
 # Last Updated: August 17, 2025
 # =================================================================
 
@@ -55,6 +55,15 @@ check_connectivity() {
         exit 1
     fi
     print_msg "$C_GREEN" "✔ Internet connection confirmed."
+}
+
+check_requirements_url() {
+    print_msg "$C_YELLOW" "▶ Checking availability of requirements URL..."
+    if ! curl -s --head "$REQUIREMENTS_URL" | grep -q "200"; then
+        print_msg "$C_RED" "❌ Failed to access requirements URL: ${REQUIREMENTS_URL}. Please check the URL or your network."
+        exit 1
+    fi
+    print_msg "$C_GREEN" "✔ Requirements URL is accessible."
 }
 
 detect_package_manager() {
@@ -180,6 +189,7 @@ install() {
         echo
     fi
     check_connectivity
+    check_requirements_url
     echo
     install_dependencies
     echo
@@ -214,7 +224,7 @@ install() {
     print_msg "$C_YELLOW" "▶ Setting up Python virtual environment..."
     python3 -m venv "${INSTALL_DIR}/${VENV_DIR}"
     if ! "${INSTALL_DIR}/${VENV_DIR}/bin/pip" install -r "${REQUIREMENTS_URL}" >/dev/null; then
-        print_msg "$C_RED" "❌ Failed to install Python libraries from ${REQUIREMENTS_URL}."
+        print_msg "$C_RED" "❌ Failed to install Python libraries from ${REQUIREMENTS_URL}. Please check the URL or try again."
         exit 1
     fi
     print_msg "$C_GREEN" "✔ Python libraries installed."
