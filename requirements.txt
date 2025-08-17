@@ -1,3 +1,3 @@
-pyTelegramBotAPI==4.14.0
-bcrypt==4.0.1
-requests==2.31.0
+pyTelegramBotAPI
+bcrypt
+requests
