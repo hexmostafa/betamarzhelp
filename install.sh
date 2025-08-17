@@ -4,7 +4,7 @@
 # Marzban Control Bot Installer/Uninstaller
 # Creator: @HEXMOSTAFA
 # Optimized and Refactored by xAI
-# Version: 2.3.7 (Stable & Robust, Fully Automated)
+# Version: 2.3.8 (Stable & Robust, Fully Automated)
 # Last Updated: August 18, 2025
 # =================================================================
 
@@ -22,7 +22,7 @@ SERVICE_NAME="marzban_bot.service"
 GITHUB_USER="hexmostafa"
 REPO_NAME="betamarzhelp"
 BRANCH="main"
-BASE_URL="https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/raw/${BRANCH}"
+BASE_URL="https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/refs/heads/${BRANCH}"
 REQUIREMENTS_URL="${BASE_URL}/requirements.txt"
 
 # --- Colors ---
@@ -241,8 +241,6 @@ install() {
     echo
     print_msg "$C_YELLOW" "▶ Setting up Python virtual environment..."
     python3 -m venv "${INSTALL_DIR}/${VENV_DIR}"
-    # New check and installation step for mysql-connector-python
-    print_msg "$C_CYAN" "  - Installing required Python libraries..."
     if ! "${INSTALL_DIR}/${VENV_DIR}/bin/pip" install -r "${REQUIREMENTS_URL}" >/dev/null; then
         print_msg "$C_RED" "❌ Failed to install Python libraries from ${REQUIREMENTS_URL}. Please check the URL or try again."
         exit 1
