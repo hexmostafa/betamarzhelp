@@ -19,6 +19,7 @@ SERVICE_NAME="marzban_bot.service"
 GITHUB_USER="HEXMOSTAFA"
 REPO_NAME="marzban-control-bot"
 BRANCH="main"
+REQUIREMENTS_URL="https://raw.githubusercontent.com/hexmostafa/betamarzhelp/refs/heads/main/requirements.txt"
 
 # --- Colors ---
 C_RESET='\e[0m'
@@ -45,6 +46,15 @@ check_root() {
         print_msg "$C_RED" "❌ Error: This script must be run as root. Please use 'sudo'."
         exit 1
     fi
+}
+
+check_connectivity() {
+    print_msg "$C_YELLOW" "▶ Checking internet connectivity..."
+    if ! ping -c 1 google.com &>/dev/null; then
+        print_msg "$C_RED" "❌ No internet connection. Please check your network."
+        exit 1
+    fi
+    print_msg "$C_GREEN" "✔ Internet connection confirmed."
 }
 
 detect_package_manager() {
@@ -169,6 +179,8 @@ install() {
         uninstall
         echo
     fi
+    check_connectivity
+    echo
     install_dependencies
     echo
     print_msg "$C_YELLOW" "▶ Creating installation directory at ${INSTALL_DIR}..."
@@ -177,7 +189,7 @@ install() {
     chmod 755 "$INSTALL_DIR"
     print_msg "$C_GREEN" "✔ Directory created."
     echo
-    print_msg "$C_YELLOW" "▶ Downloading scripts and requirements from GitHub..."
+    print_msg "$C_YELLOW" "▶ Downloading scripts from GitHub..."
     
     local files_to_download=(
         "marzban_bot.py"
@@ -186,7 +198,6 @@ install() {
         "config_manager.py"
         "database_manager.py"
         "marzban_api_wrapper.py"
-        "requirements.txt"
     )
     for file in "${files_to_download[@]}"; do
         print_msg "$C_CYAN" "  - Downloading ${file}..."
@@ -202,8 +213,8 @@ install() {
     echo
     print_msg "$C_YELLOW" "▶ Setting up Python virtual environment..."
     python3 -m venv "${INSTALL_DIR}/${VENV_DIR}"
-    if ! "${INSTALL_DIR}/${VENV_DIR}/bin/pip" install -r "${INSTALL_DIR}/requirements.txt" >/dev/null; then
-        print_msg "$C_RED" "❌ Failed to install Python libraries."
+    if ! "${INSTALL_DIR}/${VENV_DIR}/bin/pip" install -r "${REQUIREMENTS_URL}" >/dev/null; then
+        print_msg "$C_RED" "❌ Failed to install Python libraries from ${REQUIREMENTS_URL}."
         exit 1
     fi
     print_msg "$C_GREEN" "✔ Python libraries installed."
