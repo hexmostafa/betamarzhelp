@@ -4,7 +4,7 @@
 # Marzban Control Bot Installer/Uninstaller
 # Creator: @HEXMOSTAFA
 # Optimized and Refactored by xAI
-# Version: 2.3.1 (Stable & Robust)
+# Version: 2.3.2 (Stable & Robust)
 # Last Updated: August 17, 2025
 # =================================================================
 
@@ -17,7 +17,7 @@ LAUNCHER_NAME="marzban-panel"
 BOT_LAUNCHER_NAME="marzban-bot"
 SERVICE_NAME="marzban_bot.service"
 GITHUB_USER="HEXMOSTAFA"
-REPO_NAME="marzban-control-bot"
+REPO_NAME="betamarzhelp"  # Changed to match requirements.txt repository
 BRANCH="main"
 REQUIREMENTS_URL="https://raw.githubusercontent.com/hexmostafa/betamarzhelp/refs/heads/main/requirements.txt"
 
@@ -57,13 +57,25 @@ check_connectivity() {
     print_msg "$C_GREEN" "✔ Internet connection confirmed."
 }
 
-check_requirements_url() {
-    print_msg "$C_YELLOW" "▶ Checking availability of requirements URL..."
-    if ! curl -s --head "$REQUIREMENTS_URL" | grep -q "200"; then
-        print_msg "$C_RED" "❌ Failed to access requirements URL: ${REQUIREMENTS_URL}. Please check the URL or your network."
+check_url_access() {
+    local url=$1
+    local file_name=$2
+    print_msg "$C_YELLOW" "▶ Checking availability of ${file_name}..."
+    if ! curl -s --head "$url" | grep -q "200"; then
+        print_msg "$C_RED" "❌ Failed to access ${file_name} at ${url}. Please check the URL or repository."
         exit 1
     fi
-    print_msg "$C_GREEN" "✔ Requirements URL is accessible."
+    print_msg "$C_GREEN" "✔ ${file_name} is accessible."
+}
+
+check_file_content() {
+    local file_path=$1
+    local file_name=$2
+    if grep -q "404: Not Found" "$file_path" 2>/dev/null; then
+        print_msg "$C_RED" "❌ Downloaded ${file_name} contains '404: Not Found'. Please verify the file in the repository."
+        rm -f "$file_path"
+        exit 1
+    fi
 }
 
 detect_package_manager() {
@@ -189,7 +201,7 @@ install() {
         echo
     fi
     check_connectivity
-    check_requirements_url
+    check_url_access "$REQUIREMENTS_URL" "requirements.txt"
     echo
     install_dependencies
     echo
@@ -210,12 +222,15 @@ install() {
         "marzban_api_wrapper.py"
     )
     for file in "${files_to_download[@]}"; do
+        local file_url="https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/${file}"
+        check_url_access "$file_url" "$file"
         print_msg "$C_CYAN" "  - Downloading ${file}..."
-        curl -sSL -o "${INSTALL_DIR}/${file}" "https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/${file}"
+        curl -sSL -o "${INSTALL_DIR}/${file}" "$file_url"
         if [ ! -s "${INSTALL_DIR}/${file}" ]; then
             print_msg "$C_RED" "❌ Failed to download ${file}."
             exit 1
         fi
+        check_file_content "${INSTALL_DIR}/${file}" "$file"
     done
 
     chmod +x "${INSTALL_DIR}"/*.py
@@ -245,13 +260,19 @@ EOF
     print_msg "$C_GREEN" "✔ Bot launcher command created."
     echo
     print_msg "$C_YELLOW" "▶ Initializing database..."
-    "${INSTALL_DIR}/${VENV_DIR}/bin/python3" "${INSTALL_DIR}/database_manager.py"
+    if ! "${INSTALL_DIR}/${VENV_DIR}/bin/python3" "${INSTALL_DIR}/database_manager.py"; then
+        print_msg "$C_RED" "❌ Failed to initialize database. Please check ${INSTALL_DIR}/database_manager.py."
+        exit 1
+    fi
     print_msg "$C_GREEN" "✔ Database initialized."
     echo
     create_systemd_service
     echo
     print_msg "$C_YELLOW" "▶ Running initial setup..."
-    "${INSTALL_DIR}/${VENV_DIR}/bin/python3" "${INSTALL_DIR}/marzban_panel.py" setup
+    if ! "${INSTALL_DIR}/${VENV_DIR}/bin/python3" "${INSTALL_DIR}/marzban_panel.py" setup; then
+        print_msg "$C_RED" "❌ Failed to run initial setup. Please check ${INSTALL_DIR}/marzban_panel.py."
+        exit 1
+    fi
     print_msg "$C_GREEN" "✔ Setup complete."
     echo
     print_msg "$C_BLUE" "============================================"
