@@ -1,3 +1,4 @@
 pyTelegramBotAPI
 bcrypt
 requests
+mysql-connector-python
