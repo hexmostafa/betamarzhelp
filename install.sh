@@ -4,7 +4,7 @@
 # Marzban Control Bot Installer/Uninstaller
 # Creator: @HEXMOSTAFA
 # Optimized and Refactored by xAI
-# Version: 2.3.2 (Stable & Robust)
+# Version: 2.3.5 (Stable & Robust, Auto-Download from GitHub)
 # Last Updated: August 17, 2025
 # =================================================================
 
@@ -16,10 +16,11 @@ VENV_DIR="venv"
 LAUNCHER_NAME="marzban-panel"
 BOT_LAUNCHER_NAME="marzban-bot"
 SERVICE_NAME="marzban_bot.service"
-GITHUB_USER="HEXMOSTAFA"
-REPO_NAME="betamarzhelp"  # Changed to match requirements.txt repository
+GITHUB_USER="hexmostafa"
+REPO_NAME="betamarzhelp"
 BRANCH="main"
-REQUIREMENTS_URL="https://raw.githubusercontent.com/hexmostafa/betamarzhelp/refs/heads/main/requirements.txt"
+BASE_URL="https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/refs/heads/${BRANCH}"
+REQUIREMENTS_URL="${BASE_URL}/requirements.txt"
 
 # --- Colors ---
 C_RESET='\e[0m'
@@ -61,7 +62,7 @@ check_url_access() {
     local url=$1
     local file_name=$2
     print_msg "$C_YELLOW" "▶ Checking availability of ${file_name}..."
-    if ! curl -s --head "$url" | grep -q "200"; then
+    if ! curl -s --head --fail "$url" | grep -q "200"; then
         print_msg "$C_RED" "❌ Failed to access ${file_name} at ${url}. Please check the URL or repository."
         exit 1
     fi
@@ -201,7 +202,7 @@ install() {
         echo
     fi
     check_connectivity
-    check_url_access "$REQUIREMENTS_URL" "requirements.txt"
+    check_requirements_url
     echo
     install_dependencies
     echo
@@ -222,12 +223,11 @@ install() {
         "marzban_api_wrapper.py"
     )
     for file in "${files_to_download[@]}"; do
-        local file_url="https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/${file}"
+        local file_url="${BASE_URL}/${file}"
         check_url_access "$file_url" "$file"
         print_msg "$C_CYAN" "  - Downloading ${file}..."
-        curl -sSL -o "${INSTALL_DIR}/${file}" "$file_url"
-        if [ ! -s "${INSTALL_DIR}/${file}" ]; then
-            print_msg "$C_RED" "❌ Failed to download ${file}."
+        if ! curl -sSL --fail -o "${INSTALL_DIR}/${file}" "$file_url"; then
+            print_msg "$C_RED" "❌ Failed to download ${file} from ${file_url}."
             exit 1
         fi
         check_file_content "${INSTALL_DIR}/${file}" "$file"
@@ -261,7 +261,7 @@ EOF
     echo
     print_msg "$C_YELLOW" "▶ Initializing database..."
     if ! "${INSTALL_DIR}/${VENV_DIR}/bin/python3" "${INSTALL_DIR}/database_manager.py"; then
-        print_msg "$C_RED" "❌ Failed to initialize database. Please check ${INSTALL_DIR}/database_manager.py."
+        print_msg "$C_RED" "❌ Failed to initialize database. Please check ${INSTALL_DIR}/database_manager.py for errors."
         exit 1
     fi
     print_msg "$C_GREEN" "✔ Database initialized."
@@ -270,7 +270,7 @@ EOF
     echo
     print_msg "$C_YELLOW" "▶ Running initial setup..."
     if ! "${INSTALL_DIR}/${VENV_DIR}/bin/python3" "${INSTALL_DIR}/marzban_panel.py" setup; then
-        print_msg "$C_RED" "❌ Failed to run initial setup. Please check ${INSTALL_DIR}/marzban_panel.py."
+        print_msg "$C_RED" "❌ Failed to run initial setup. Please check ${INSTALL_DIR}/marzban_panel.py for errors."
         exit 1
     fi
     print_msg "$C_GREEN" "✔ Setup complete."
