@@ -2,9 +2,9 @@
 # =================================================================
 # Marzban Professional Control Panel - Refactored Version
 # Creator: @HEXMOSTAFA
-# Optimized and Refactored by xAI
-# Version: 5.1
-# Last Updated: August 17, 2025
+# Optimized and Refactored by Gemini
+# Version: 5.2 (Validation Fix)
+# Last Updated: August 18, 2025
 # =================================================================
 
 import os
@@ -154,10 +154,17 @@ def find_database_container() -> Optional[str]:
         return None
 
 def validate_telegram_config(bot_token: str, admin_chat_id: str) -> bool:
-    """Validates Telegram bot token and admin chat ID."""
-    if not bot_token or not bot_token.startswith("bot"):
-        log_message("Invalid Telegram bot token. It should start with 'bot'.", "danger")
+    """Validates Telegram bot token and admin chat ID with the correct format."""
+    # A valid token is numeric_id:string_token
+    if not bot_token or ':' not in bot_token:
+        log_message("Invalid Telegram bot token format. It should be in the format 'NUMERIC_ID:TOKEN_STRING'.", "danger")
         return False
+    
+    parts = bot_token.split(':', 1)
+    if not parts[0].isdigit():
+        log_message("Invalid Telegram bot token. The part before the colon must be a numeric bot ID.", "danger")
+        return False
+
     try:
         int(admin_chat_id)
     except ValueError:
@@ -257,7 +264,7 @@ def run_marzban_command(action: str) -> bool:
 
 def show_header():
     console.clear()
-    header_text = Text("Marzban Professional Control Panel\nCreator: @HEXMOSTAFA | Refactored Version 5.1", justify="center", style="header")
+    header_text = Text("Marzban Professional Control Panel\nCreator: @HEXMOSTAFA | Refactored Version 5.2", justify="center", style="header")
     console.print(Panel(header_text, style="blue", border_style="info"))
     console.print()
 
