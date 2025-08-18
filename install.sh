@@ -4,7 +4,7 @@
 # Marzban Control Bot Installer/Uninstaller
 # Creator: @HEXMOSTAFA
 # Optimized and Refactored by Gemini
-# Version: 2.3.9 (Robust & Interactive)
+# Version: 2.4.0 (Robust & Interactive with DB Credentials)
 # Last Updated: August 18, 2025
 # =================================================================
 
@@ -118,7 +118,9 @@ create_config_file() {
     ask_for_input "Enter Marzban Admin Username:" "MARZBAN_USER" "admin"
     ask_for_input "Enter Marzban Admin Password:" "MARZBAN_PASS" ""
     
-    # You can add more questions for database if needed, but keeping it simple for now.
+    # --- NEW: Ask for database credentials ---
+    ask_for_input "Enter Database User [default: root]:" "DB_USER" "root"
+    ask_for_input "Enter Database Password [default: empty]:" "DB_PASS" ""
     
     print_msg "$C_YELLOW" "▶ Creating config.json file..."
     cat << EOF > "$CONFIG_FILE"
@@ -129,8 +131,8 @@ create_config_file() {
         "backup_interval": "10"
     },
     "database": {
-        "user": "root",
-        "password": "",
+        "user": "${DB_USER}",
+        "password": "${DB_PASS}",
         "host": "127.0.0.1"
     },
     "marzban": {
@@ -241,6 +243,8 @@ EOF
     print_msg "$C_GREEN" "✅ Installation is complete!"
     print_msg "$C_WHITE" "The bot is now running as a service. To check its status, run:"
     print_msg "$C_CYAN" "    sudo systemctl status ${SERVICE_NAME}"
+    print_msg "$C_WHITE" "To run the panel, use the command:"
+    print_msg "$C_CYAN" "    marzban-panel"
     print_msg "$C_WHITE" "To uninstall the bot, run:"
     print_msg "$C_CYAN" "    sudo $0 uninstall"
     print_msg "$C_BLUE" "============================================"
