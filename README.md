@@ -1,87 +1,45 @@
-Marzban Control Bot
-A professional Telegram bot for managing Marzban VPN panel admins, created by @HEXMOSTAFA and optimized by xAI.
-Features
+﻿# Marzban Unified Bot
 
-Admin management (create, delete, edit)
-Traffic and expiry management for admins and their users
-Backup and restore functionality
-Automatic backup scheduling
-Secure API integration with Marzban
-User-friendly interface with inline keyboards
+A unified Telegram bot for managing Marzban panels and performing backup/restore operations.
 
-Prerequisites
+## Installation
 
-Python 3.8+
-Required Python packages: telebot, bcrypt, requests
-A running Marzban VPN panel with API access
-Sudo privileges on the server
-A Telegram bot token from BotFather
+1. Clone the repository:
+   ```bash
+   git clone <repository_url>
+   cd marzban_unified_bot
+   ```
 
-Installation
+2. Run the installer:
+   ```bash
+   sudo ./install.sh
+   ```
 
-Clone the repository:
-git clone https://github.com/yourusername/marzban-control-bot.git
-cd marzban-control-bot
+3. Configure the `.env` file at `/opt/marzban_unified_bot/.env`:
+   ```plaintext
+   BOT_TOKEN=your_bot_token
+   SUDO_ADMINS=123456789
+   MARZBAN_URL=https://your-marzban-panel.com
+   MARZBAN_USERNAME=admin
+   MARZBAN_PASSWORD=admin_password
+   TELEGRAM_ADMIN_CHAT_ID=your_admin_chat_id
+   ```
 
+4. For Docker installation:
+   ```bash
+   docker-compose up -d
+   ```
 
-Install dependencies:
-pip install -r requirements.txt
+## Usage
 
+- Start the bot with `systemctl start marzban-unified-bot` (non-Docker) or `docker-compose up -d` (Docker).
+- Use Telegram commands to manage admins, users, payments, backups, and restores.
 
-Run the setup script:
-sudo python3 marzban_panel.py setup
+## Directory Structure
 
-Follow the prompts to enter:
-
-Telegram bot token
-Admin chat ID
-Marzban API base URL, username, and password
-Backup directory path
-
-
-Start the bot:
-python3 marzban_bot.py
-
-
-
-Usage
-
-Start the bot with /start in Telegram.
-Use the inline keyboard to navigate through admin management, server status, and settings.
-Follow on-screen instructions for creating/deleting admins, managing traffic/expiry, and handling backups.
-
-Project Structure
-marzban-control-bot/
-├── marzban_bot.py          # Main bot script
-├── marzban_panel.py        # Panel management script
-├── keyboards.py            # Inline keyboard definitions
-├── config_manager.py       # Configuration management
-├── database_manager.py     # Database operations
-├── marzban_api_wrapper.py  # Marzban API wrapper
-├── config.json             # Configuration file (generated)
-├── marzban.db              # SQLite database (generated)
-├── requirements.txt        # Python dependencies
-├── README.md               # This file
-
-Configuration
-The config.json file is generated during setup and contains:
-{
-    "telegram": {
-        "bot_token": "your_bot_token",
-        "admin_chat_id": "your_admin_chat_id",
-        "backup_interval": "60"
-    },
-    "marzban_api": {
-        "base_url": "http://localhost:8000",
-        "username": "admin_username",
-        "password": "admin_password"
-    },
-    "backup": {
-        "backup_dir": "/path/to/backups"
-    }
-}
-
-Contributing
-Contributions are welcome! Please open an issue or pull request on GitHub.
-License
-MIT License
+- `src/`: Python source code
+- `data/`: Database and backup storage
+- `logs/`: Log files
+- `Dockerfile` and `docker-compose.yml`: For Docker deployment
+- `install.sh`: Installation script
+- `requirements.txt`: Python dependencies
