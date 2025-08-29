@@ -17,12 +17,16 @@ A unified Telegram bot for managing Marzban panels and performing backup/restore
 
 3. Configure the `.env` file at `/opt/marzban_unified_bot/.env`:
    ```plaintext
-   BOT_TOKEN=your_bot_token
-   SUDO_ADMINS=123456789
-   MARZBAN_URL=https://your-marzban-panel.com
-   MARZBAN_USERNAME=admin
-   MARZBAN_PASSWORD=admin_password
-   TELEGRAM_ADMIN_CHAT_ID=your_admin_chat_id
+BOT_TOKEN=your_bot_token
+SUDO_ADMINS=123456789
+MARZBAN_URL=https://your-marzban-panel.com
+MARZBAN_USERNAME=admin
+MARZBAN_PASSWORD=admin_password
+BACKUP_INTERVAL=6
+BACKUP_DIR=/var/backups/marzban
+MARZBAN_SERVICE_PATH=/opt/marzban
+TELEGRAM_ADMIN_CHAT_ID=your_admin_chat_id
+MONITORING_INTERVAL=600
    ```
 
 4. For Docker installation:
