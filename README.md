@@ -6,7 +6,7 @@ A unified Telegram bot for managing Marzban panels and performing backup/restore
 
 1. Clone the repository:
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/hexmostafa/betamarzhelp.git
    cd marzban_unified_bot
    ```
 
